@@ -42,6 +42,7 @@
 					<th>Id</th>
 					<th>Nombre</th>
 					<th>Precio Unitario</th>
+					<th>Cantidad Actual</th>
 					<th>Editar</th>
 					<th>Eliminar</th>
 				</tr>
@@ -51,6 +52,7 @@
 					<td th:text="${articulo.idArticulo}"></td>
 					<td th:text="${articulo.nombre}"></td>
 					<td th:text="${articulo.precioUnitario}"></td>
+					<td th:text="${articulo.cantidadActual}"></td>
 					<td><a class="btn btn-primary btn-xs"
 						th:href="@{/articulos/form/} + ${articulo.idArticulo}">Editar</a></td>
 					<td><a class="btn btn-danger btn-xs"

@@ -76,7 +76,6 @@ public class OrdenController {
 			orden.addDetalleOrden(detalle);
 			orden.setTotal(orden.getDetallesOrden().stream().map(DetalleOrden::calcularImporte)
 					.collect(Collectors.summingDouble(Double::doubleValue)));
-			log.info("ID: " + itemId[i].toString() + ", cantidad: " + cantidad[i].toString());
 		}
 		ordenService.saveOrden(orden);
 		status.setComplete();

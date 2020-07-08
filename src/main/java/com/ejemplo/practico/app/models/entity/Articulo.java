@@ -30,7 +30,8 @@ public class Articulo implements Serializable {
 	@NotNull
 	private Double precioUnitario;
 
-	@Column(name = "cnatidad_actual")
+	@Column(name = "cantidad_actual", nullable = false)
+	@NotNull
 	private Integer cantidadActual;
 
 	public Long getIdArticulo() {

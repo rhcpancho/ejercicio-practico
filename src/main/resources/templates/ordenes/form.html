@@ -44,7 +44,7 @@
 			<div class="form-group row">
 				<label class="col-sm-2 col-form-label">Buscar producto</label>
 				<div class="col-sm-6">
-					<input type="text" id="buscar_producto" class="form-control" />
+					<input type="text" id="buscar_producto" class="form-control" autocomplete="off" />
 				</div>
 			</div>
 			<table th:replace="ordenes/plantilla-items :: itemsFactura"></table>
@@ -98,14 +98,14 @@
 								return {
 									value : item.idArticulo,
 									label : item.nombre,
-									precio : item.precioUnitario
+									precio : item.precioUnitario,
+									cantidadActual : item.cantidadActual
 								}
 							}));
 						},
 					});
 				},
 				select : function(event, ui) {
-					//$('#buscar_producto').val(ui.item.label);
 					if(itemsHelper.hasProducto(ui.item.value)) {
 						itemsHelper.incrementarCantidad(ui.item.value, ui.item.precio);
 						return false;
@@ -114,10 +114,16 @@
 					linea = linea.replace(/{ID}/g, ui.item.value);
 					linea = linea.replace(/{NOMBRE}/g, ui.item.label);
 					linea = linea.replace(/{PRECIO}/g, ui.item.precio);
-
-					$('#cargarItemProductos tbody').append(linea);
-					itemsHelper.calcularImporte(ui.item.value, ui.item.precio, 1);
-					return false;
+					linea = linea.replace(/{CANTIDAD_ACTUAL}/g, ui.item.cantidadActual);
+					
+					if (itemsHelper.validarStock(1, ui.item.cantidadActual)) {
+						$('#cargarItemProductos tbody').append(linea);
+						itemsHelper.calcularImporte(ui.item.value, ui.item.precio, 1);
+						return false;
+					} else {
+						alert('No se dispone de la cantidad ingresada. Cantidad actual: ' + cantidadActual);
+						return;
+					}
 				}
 			});
 			$('form').submit(function(){
@@ -128,8 +134,14 @@
 
 		var itemsHelper = {
 			calcularImporte : function(id, precio, cantidad) {
-				$('#total_importe_' + id).html(parseInt(precio) * parseInt(cantidad));
-				this.calcularTotal();
+				var cantidadActual = parseInt($('#row_' + id + ' input[name="actual[]"]').val());
+				if (this.validarStock(cantidad, cantidadActual)) {
+					$('#total_importe_' + id).html(parseInt(precio) * parseInt(cantidad));
+					this.calcularTotal();
+				} else {
+					alert('No se dispone de la cantidad ingresada. Cantidad actual: ' + cantidadActual);
+					return;
+				}
 			},
 			hasProducto: function(id) {
 				var resultado = false;
@@ -142,8 +154,14 @@
 			},
 			incrementarCantidad: function(id, precio) {
 				var cantidad = $('#cantidad_'+id).val() ? parseInt($('#cantidad_'+id).val()) : 0;
-				$('#cantidad_'+id).val(++cantidad);
-				this.calcularImporte(id, precio, cantidad);
+				var cantidadActual = parseInt($('#row_' + id + ' input[name="actual[]"]').val());
+				if (this.validarStock(++cantidad, cantidadActual)) {
+					$('#cantidad_'+id).val(++cantidad);
+					this.calcularImporte(id, precio, cantidad);
+				} else {
+					alert('No se dispone de la cantidad ingresada. Cantidad actual: ' + cantidadActual);
+					return;
+				}
 			},
 			eliminarDetalle: function(id) {
 				$('#row_'+id).remove();
@@ -155,6 +173,14 @@
 					total += parseInt($(this).html());
 				});
 				$('#gran_total').html(total);
+			},
+			validarStock: function(cantidad, cantidadActual) {
+				console.log(cantidad);
+				console.log(cantidadActual);
+				if (cantidadActual <= 0) {
+					return false;
+				}
+				return parseInt(cantidad) <= parseInt(cantidadActual);
 			}
 		}
 	</script>

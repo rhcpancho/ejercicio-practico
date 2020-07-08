@@ -46,6 +46,13 @@
 				</div>
 			</div>
 			<div class="form-group row">
+				<label class="col-sm-2 col-form-label">Cantidad Actual</label>
+				<div class="col-sm-6">
+					<input type="number" th:field="*{cantidadActual}" class="form-control" th:errorclass="'form-control alert-danger'" />
+					<small class="form-text text-danger" th:if="${#fields.hasErrors('cantidadActual')}" th:errors="*{cantidadActual}"></small>
+				</div>
+			</div>
+			<div class="form-group row">
 				<div class="col-sm-6">
 					<input type="submit" value="Guardar Artículo"
 						class="btn btn-secondary" />
